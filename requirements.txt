@@ -1,0 +1,9 @@
+pandas
+numpy
+statsmodels
+altair
+pandas_datareader
+jupyterlab
+vega_datasets
+requests
+scipy
