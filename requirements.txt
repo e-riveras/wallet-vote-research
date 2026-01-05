@@ -7,3 +7,4 @@ jupyterlab
 vega_datasets
 requests
 scipy
+matplotlib
