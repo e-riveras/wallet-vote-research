@@ -5,14 +5,15 @@ import os
 
 def fetch_economic_data(start_date="1970-01-01"):
     """
-    Fetches economic indicators from FRED.
+    Fetches economic indicators from FRED and resamples to monthly.
     """
     print("Fetching economic data from FRED...")
+    # WILL5000PRFC is a good long-term proxy for the S&P 500 on FRED
     series = {
         'CPIAUCSL': 'inflation_cpi',
         'UNRATE': 'unemployment_rate',
         'GASREGW': 'gas_prices',
-        'SP500': 'sp500'
+        'WILL5000PRFC': 'stock_market'
     }
     
     end_date = datetime.now().strftime('%Y-%m-%d')
@@ -21,12 +22,15 @@ def fetch_economic_data(start_date="1970-01-01"):
     for code, name in series.items():
         try:
             data = web.DataReader(code, 'fred', start_date, end_date)
+            # CRITICAL: Resample to Month Start ('MS') to align disparate frequencies
+            # We take the mean for the month to represent the general state
+            data = data.resample('MS').mean()
             data.columns = [name]
             df_list.append(data)
         except Exception as e:
             print(f"Error fetching {code}: {e}")
             
-    # Combine all series
+    # Combine all series - they are now all aligned on Month Start
     economics = pd.concat(df_list, axis=1)
     return economics
 
